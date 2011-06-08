@@ -1,0 +1,32 @@
+#ifndef __LOGPARSER_HPP
+#define __LOGPARSER_HPP
+
+#include<string>
+#include<queue>
+
+#include "util/Singleton.hpp"
+
+class cLogParser : public cSingleton<cLogParser>
+{
+public:
+	cLogParser();
+	~cLogParser();
+	
+	// Accessors
+	void setFileName(std::string arg_filename) { m_sFileName = arg_filename; }
+	
+	void init();
+	int tail();
+	int parse();
+	void cyclic();
+
+private:
+	std::string m_sFileName;
+	
+	std::queue<std::string> m_qReadLines;
+};
+
+#define LogParser cLogParser::getInstance()
+
+#endif // __LOGPARSER_HPP
+

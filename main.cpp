@@ -4,8 +4,10 @@
 #include <soci/soci.h>
 #include <soci/sqlite3/soci-sqlite3.h>
 
+#include "Config.hpp"
+#include "Server.hpp"
 #include "LogParser.hpp"
-#include "User.hpp"
+#include "UserManager.hpp"
 
 using namespace std;
 using namespace soci;
@@ -15,9 +17,8 @@ using namespace soci;
 	GLOBALS
    -------------------------------------------------------- */
 const char g_sVersion[] = "0.1";
-   
-session db(sqlite3, "mcsrv-tools.db");
 
+session db(sqlite3, "mcsrv-tools.db");
 
 /* --------------------------------------------------------
 	PROTOTYPES
@@ -31,18 +32,27 @@ void *readThreadFunc(void* arg);
 int main(int argc, char **argv)
 {
 	bool bRunning = true;
-	pthread_t readThread;
-	cUser user;
+	pthread_t readThread;	
+	string sLogFile;
 	
-	cout<<"Minecraft-Server-Tools v"<<g_sVersion<<endl;
+	cout<<"Minecraft-Server-Tools v"<<g_sVersion<<endl
+		<<endl;
 	
-	cLogParser::getInstance()->setFileName("/home/minecraft/minecraft-server/server.log");
+	// ----------------------------------------------------
+	Config->init();
+	Server->init();
+	LogParser->init();
+	UserManager->init();
+	
+	// ----------------------------------------------------
+	sLogFile = Config->get("Minecraft.Path") + "/" + Config->get("Minecraft.LogFile");
+	LogParser->setFileName(sLogFile);
 	
 	pthread_create( &readThread, NULL, readThreadFunc, NULL );
 	
 	while(bRunning)
 	{
-		cLogParser::getInstance()->parse();
+		LogParser->parse();
 		usleep(200 * 1000);
 	}
 
@@ -51,5 +61,5 @@ int main(int argc, char **argv)
 
 void *readThreadFunc(void* arg)
 {
-	cLogParser::getInstance()->tail();
+	LogParser->tail();
 }
