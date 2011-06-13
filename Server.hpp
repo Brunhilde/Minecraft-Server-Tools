@@ -11,7 +11,8 @@ public:
 	
 	void init();
 	
-	void cmd(std::string arg_cmd);
+	void cmd(const std::string arg_cmd);
+	void say(const std::string arg_text);
 	
 private:
 };

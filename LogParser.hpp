@@ -13,14 +13,19 @@ public:
 	~cLogParser();
 	
 	// Accessors
-	void setFileName(std::string arg_filename) { m_sFileName = arg_filename; }
+	void setFileName(const std::string arg_filename) { m_sFileName = arg_filename; }
 	
 	void init();
 	int tail();
-	int parse();
+	
 	void cyclic();
 
 private:
+	int parse();
+	
+	void handleLine(const std::string arg_line);
+	std::string extractIpAddress(const std::string arg_ipaddress);
+	
 	std::string m_sFileName;
 	
 	std::queue<std::string> m_qReadLines;

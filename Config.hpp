@@ -16,8 +16,8 @@ public:
 	void init();
 	
 	void read();
-	std::string& get(std::string arg_param);
-	std::string& get(const char* arg_param);
+	std::string get(const std::string arg_param);
+	std::string get(const char* arg_param);
 
 private:
 	std::set<std::string>              m_vOptions;

@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 	
 	while(bRunning)
 	{
-		LogParser->parse();
-		usleep(200 * 1000);
+		LogParser->cyclic();
+		usleep(100 * 1000);
 	}
 
 	return 0;

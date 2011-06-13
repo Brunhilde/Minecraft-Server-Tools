@@ -7,6 +7,8 @@ set(mcsrv-tools-src
 	LogParser.cpp
 	UserManager.cpp
 	User.cpp
+	Event.cpp
+	Greet.cpp
 )
 set(mcsrv-tools-libs
 	pthread

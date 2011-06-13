@@ -56,12 +56,12 @@ void cConfig::read()
     }
 }
 
-string& cConfig::get(string arg_param)
+string cConfig::get(const string arg_param)
 {
 	return m_mParameters[arg_param];
 }
 
-string& cConfig::get(const char* arg_param)
+string cConfig::get(const char* arg_param)
 {
 	return get(string(arg_param));
 }

@@ -1,13 +1,18 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <sstream>
+#include <vector>
 #include <queue>
 #include <fstream>
 
 #include <sys/inotify.h>
+#include <ctime>
 
 #include "LogParser.hpp"
-#include "Events.hpp"
+#include "Event.hpp"
+#include "UserManager.hpp"
+#include "User.hpp"
 
 using namespace std;
 
@@ -68,13 +73,70 @@ int cLogParser::parse()
 	
 	while( !m_qReadLines.empty() )
 	{
-			line = m_qReadLines.front();
-			m_qReadLines.pop();
+		line = m_qReadLines.front();
+		m_qReadLines.pop();
+		handleLine(line);
 			
-			cout<<line<<endl;
+		//cout<<line<<endl;
 	}
 }
 
+void cLogParser::handleLine(const std::string arg_line)
+{
+	stringstream   line;
+	vector<string> parts;
+	string         temp;
+	
+	cUser          user;
+	string		   name;
+	string         ipaddress;
+	time_t         now;
+	
+	
+	line<<arg_line;
+	
+	while( getline(line, temp, ' ') )	
+		parts.push_back(temp);
+		
+	// valid lines have more than 3 parts
+	if( parts.size() <= 3 )
+		return;
+		
+	// check for login
+	if( arg_line.find("logged in") != string::npos )
+	{	
+		name      = parts[3];
+		ipaddress = extractIpAddress(parts[4]);
+		now       = time(NULL);
+		
+		user = UserManager->userConnected(name, ipaddress, now);
+		Event->playerConnected(user);		
+	}
+	
+	// check for disconnect
+	else if( arg_line.find("lost connection") != string::npos )
+	{
+		name = parts[3];
+		now  = time(NULL);
+		
+		user = UserManager->userDisconnected(name, now);
+		Event->playerDisconnected(user);
+	}
+}
+
+string cLogParser::extractIpAddress(const string arg_ipaddress)
+{
+	string ipaddress;
+	
+	// [/ip:port]
+	// extract: ip:port
+	ipaddress.assign( arg_ipaddress.begin()+2, arg_ipaddress.begin()+(int)arg_ipaddress.find("]") );
+	
+	return ipaddress;
+}
+
+
 void cLogParser::cyclic()
 {
+	parse();
 }

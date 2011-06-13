@@ -1,7 +1,9 @@
 #ifndef __USERMANAGER_HPP
 #define __USERMANAGER_HPP
 
-#include <time.h>
+#include <vector>
+
+#include <ctime>
 
 #include "util/Singleton.hpp"
 #include "User.hpp"
@@ -16,16 +18,23 @@ public:
 	
 	void usersSync();
 	
-	cUser& userGetByName(std::string arg_name);
-	cUser& userGetByIPAddress(std::string arg_ipaddress);
-	void   userAdd(std::string arg_name, std::string arg_ipaddress, time_t arg_timejoined);
-	void   userUpdate(cUser& arg_user);
+	cUser userGetByName(const std::string arg_name);
+	cUser userGetByIPAddress(const std::string arg_ipaddress);
+	const std::vector<cUser>& usersGetConnected() const;
+	
+	cUser userAdd(const std::string arg_name, const std::string arg_ipaddress, const time_t arg_timejoined, const time_t arg_timedisconnected, const time_t arg_timeoverall);
+	void  userUpdate(const cUser& arg_user);
+	
+	cUser userConnected(const std::string arg_name, const std::string arg_ipaddress, const time_t arg_timejoined);
+	cUser userDisconnected(const std::string arg_name, const time_t arg_timedisconnected);
 	
 private:
 	void checkTables();
+	bool userExists(const std::string arg_name);
+	void usersGetAll();
 	
 	std::vector<cUser>  m_vUsers;
-	std::vector<cUser*> m_vUsersConnected;
+	std::vector<cUser>  m_vUsersConnected;
 };
 
 #define UserManager cUserManager::getInstance()
